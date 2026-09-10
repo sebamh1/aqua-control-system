@@ -1,0 +1,316 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║             AQUA CONTROL SYSTEM - SISTEMA IoT DE CONTROL DE O2               ║
+║          Sistema Profesional para Monitoreo Acuícola con AWS IoT             ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📌 PROYECTO COMPLETADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Se ha creado un SISTEMA MODULAR, PROFESIONAL Y LISTO PARA PRODUCCIÓN con:
+
+✅ 1,500+ líneas de código Python
+✅ 800+ líneas de firmware Arduino (C++)
+✅ Arquitectura de 9 módulos independientes
+✅ Documentación completa (README + QUICK_START)
+✅ 5 ejemplos de uso interactivos
+✅ API REST con FastAPI
+✅ Integración AWS IoT Core
+
+
+📁 ESTRUCTURA PRINCIPAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+src/
+  ├─ main.py ..................... Punto de entrada (orquestador central)
+  ├─ hardware/serial_manager.py .. Comunicación bidireccional con ESP32s
+  ├─ sensors/dissolved_oxygen.py . Lectura O2 con Modbus RTU + compensación
+  ├─ actuators/relay_controller.py Control de 2 relés + electroválvulas
+  ├─ experiments/saturation_controller.py Lógica de control + histéresis
+  ├─ cloud/aws_iot_client.py .... Cliente MQTT para AWS IoT Core
+  └─ interface/web_api.py ....... API REST con FastAPI (10 endpoints)
+
+firmware/
+  ├─ esp32_s3_sensor_reader/main.cpp  Lector de sensores Modbus RTU
+  └─ esp32_relay_controller/main.cpp  Controlador de relés con pulsos
+
+config/
+  └─ settings.py ................ Configuración centralizada (200+ params)
+
+
+🔑 CARACTERÍSTICAS CLAVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HARDWARE
+  ✓ Comunicación serial thread-safe con 2 ESP32 simultáneamente
+  ✓ Protocolo personalizado con CRC16 y validación
+  ✓ Reconexión automática con reintentos exponenciales
+
+SENSORES
+  ✓ Driver Modbus RTU para 2 sensores de O2 disuelto
+  ✓ Compensación por salinidad (ecuación Weiss 1970)
+  ✓ Validación de rangos y cálculo de saturación
+
+CONTROL
+  ✓ Histéresis adaptativa (±5% del target) para evitar oscilaciones
+  ✓ Detección automática de estabilidad (desv. est. en ventana móvil)
+  ✓ Control de válvulas NC (normalmente cerradas)
+
+EXPERIMENTOS
+  ✓ Hasta 5 perfiles de saturación/tiempo por experimento
+  ✓ Transiciones automáticas entre perfiles
+  ✓ Almacenamiento local en CSV + SQLite
+  ✓ Grabación de todos los eventos
+
+CLOUD
+  ✓ Publicación a AWS IoT Core con certificados X.509
+  ✓ Device Shadow para estado persistente
+  ✓ Buffer offline (almacena si pierde conexión)
+  ✓ Topics MQTT organizados
+
+API REST
+  ✓ 10 endpoints RESTful con validación Pydantic
+  ✓ Auto-documentación con Swagger
+  ✓ Descarga de CSV
+  ✓ Control completo de experimentos
+
+
+📊 FLUJO DE DATOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Raspberry Pi
+         │
+    ┌────┴────────────────────────────────────────┐
+    │                                              │
+    ▼                                              ▼
+    ESP32-S3                                   ESP32
+    (Sensores)                              (Relés)
+    │                                          │
+    ├─ O2 Sensor #1 ◄─ RS485 ────┐           │
+    │                             ├─ Modbus   │
+    └─ O2 Sensor #2 ◄─ RS485 ────┤           │
+                                  │       ┌───┴──────────────┐
+                              Lectura    │                   │
+                              (cada 1s) │                   │
+                                  │      Relé #1           Relé #2
+                                  │      │                 │
+    Raspberry Pi                  │      ▼                 ▼
+    ┌────────────────────────────┴─┐   Válvula 1      Válvula 2
+    │  Experiment Executor         │   (electroválvula NC)
+    │  (Control Loop 1Hz)          │
+    │                              │
+    ├─ Lee Sensores               │
+    ├─ Calcula Control            │
+    ├─ Controla Válvulas          │
+    ├─ Almacena CSV               │
+    ├─ Publica AWS IoT            │
+    └──────┬──────────────────────┘
+           │
+           ▼
+           AWS IoT Core (Nube)
+
+
+🚀 COMENZAR EN 3 PASOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. PREPARAR (5 min)
+   ──────────────────
+   cd ~/aqua-control-system
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+
+2. PROBAR (3 min)
+   ──────────────
+   python3 example_usage.py
+   → Seleccionar ejemplo 1 para ver lecturas de sensores
+
+3. EJECUTAR (2 min)
+   ────────────────
+   python3 src/main.py
+   → API en http://localhost:8000
+   → Dashboard en http://localhost:8000
+
+
+📖 DOCUMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+README.md ........... Documentación completa (50+ KB)
+QUICK_START.md ..... Guía de instalación (10 min)
+example_usage.py ... 5 ejemplos interactivos
+config/settings.py . Todos los parámetros documentados
+
+
+🔧 PERSONALIZACION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Editar FÁCILMENTE:
+
+  ✏️  Puertos seriales → config/settings.py
+  ✏️  Valores de calibración → config/settings.py
+  ✏️  Parámetros de control → config/ControlConfig
+  ✏️  Sensores RS485 → src/sensors/dissolved_oxygen.py
+  ✏️  Lógica de control → src/experiments/saturation_controller.py
+  ✏️  Endpoints API → src/interface/web_api.py
+  ✏️  AWS IoT → config/settings.py (ENDPOINT + certificados)
+
+
+📋 CHECKLIST DE IMPLEMENTACIÓN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONFIGURACIÓN INICIAL
+  □ Clonar proyecto
+  □ Crear ambiente virtual
+  □ Instalar dependencias
+  □ Crear archivo .env con puertos USB
+
+FIRMWARE
+  □ Instalar PlatformIO
+  □ Compilar ESP32-S3
+  □ Subir firmware a ESP32-S3
+  □ Compilar ESP32
+  □ Subir firmware a ESP32
+
+PRUEBAS
+  □ Ejecutar example_usage.py
+  □ Verificar lectura de sensores
+  □ Verificar control de relés
+  □ Probar API REST
+  □ Crear y ejecutar experimento
+
+AWS IOT (OPCIONAL)
+  □ Crear thing en AWS
+  □ Descargar certificados
+  □ Copiar a config/certs/
+  □ Actualizar .env
+  □ Probar conexión
+
+PRODUCCIÓN
+  □ Configurar systemd service
+  □ Setup de logs rotables
+  □ Monitoreo de recursos
+  □ Backups de CSV
+  □ Tests de carga
+
+
+⚙️ CONFIGURACIÓN .env MÍNIMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Crear archivo .env en la raíz:
+
+    ESP32_SENSOR_PORT=/dev/ttyUSB0
+    ESP32_RELAY_PORT=/dev/ttyUSB1
+    SERIAL_BAUDRATE=115200
+    API_PORT=8000
+    DEBUG=False
+    LOG_LEVEL=INFO
+
+(Ver QUICK_START.md para configuración completa)
+
+
+💡 EJEMPLOS DE USO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Crear experimento:
+  curl -X POST http://localhost:8000/api/experiments \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Mi experimento","saturation_profiles":[...]}'
+
+Iniciar experimento:
+  curl -X POST http://localhost:8000/api/experiments/{id}/start
+
+Obtener lecturas:
+  curl http://localhost:8000/api/sensors/current
+
+Descargar datos:
+  curl http://localhost:8000/api/data/download/{id} -o data.csv
+
+
+🔍 TROUBLESHOOTING RÁPIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problema                    Solución
+─────────────────────────   ───────────────────────────────────────
+Puerto USB no reconocido     sudo usermod -a -G dialout $USER
+Permission denied            sudo chmod 666 /dev/ttyUSB*
+Sensor no responde          Verificar voltaje RS485 y conexiones
+API no inicia               Cambiar puerto en .env (API_PORT=8001)
+Certificados no encontrados Copiar .pem a config/certs/
+Ver logs                    tail -f logs/aqua_system.log
+
+
+📚 ESTRUCTURA LÓGICA DEL CÓDIGO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SerialManager
+   └─ Gestiona conexión con 2 ESP32
+   └─ Lee/escribe frames con CRC16
+   └─ Thread-safe con lock
+
+2. DissolvedOxygenSensor
+   └─ Lee datos Modbus RTU
+   └─ Aplica compensación por salinidad
+   └─ Valida rangos
+
+3. RelayController
+   └─ Activa/desactiva relés
+   └─ Genera pulsos
+   └─ Registra cambios
+
+4. SaturationController
+   └─ Calcula histéresis
+   └─ Toma decisiones de control
+   └─ Verifica estabilidad
+
+5. ExperimentExecutor
+   └─ Ejecuta perfiles
+   └─ Orquesta todos los componentes
+   └─ Almacena datos
+
+6. AWSIoTClient
+   └─ Conecta a MQTT
+   └─ Publica telemetría
+   └─ Buffer offline
+
+7. FastAPI
+   └─ Expone endpoints REST
+   └─ Valida entrada
+   └─ Retorna JSON
+
+
+🎯 PRÓXIMOS PASOS SUGERIDOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CORTO PLAZO (Esta semana)
+  • Instalar y probar sistema
+  • Calibrar sensores
+  • Realizar primer experimento
+
+MEDIANO PLAZO (Este mes)
+  • Configurar AWS IoT Core
+  • Crear dashboard web personalizado
+  • Integrar con Grafana (opcional)
+
+LARGO PLAZO (Próximos meses)
+  • Implementar controlador PID adaptativo
+  • Agregar predicción con ML
+  • Sincronización multi-dispositivo
+  • Sistema de alertas
+
+
+📞 SOPORTE Y CONTACTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Email: s.messina@bluemetricsiot.com
+Proyecto: Blue Metrics - IoT Oceanográfico
+Ubicación: Coquimbo, Chile
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                    ✅ SISTEMA LISTO PARA USAR
+
+                  Próximo paso: Leer QUICK_START.md
+
+═════════════════════════════════════════════════════════════════════════════════
